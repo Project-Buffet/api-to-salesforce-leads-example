@@ -1,0 +1,32 @@
+[
+ {
+  "leadId": "11224334",
+  "firstName": "Shane",
+  "lastName": "McClanahan",
+  "company": "Tampa Bay Rays",
+  "phone": "+1-202-555-0180",
+  "email": "shane.mcclanahan@rays.com",
+  "address": "123 Jungle Book Way",
+  "title": "Starting Pitcher",
+  "city": "Tampa Bay",
+  "state": "FL",
+  "country": "USA",
+  "postalCode": "33660",
+  "status": "Open - Not Contacted"
+ },
+ {
+  "leadId": "11224334",
+  "firstName": "Randy",
+  "lastName": "Arozarena",
+  "company": "Tampa Bay Rays",
+  "phone": "+1-813-5453-01343",
+  "email": "randy.arozarena@rays.com",
+  "address": "339 Evan Longaria Drive",
+  "title": "Center Fielder",
+  "city": "Tampa Bay",
+  "state": "FL",
+  "country": "USA",
+  "postalCode": "33663",
+  "status": "Open - Not Contacted"
+ }
+]

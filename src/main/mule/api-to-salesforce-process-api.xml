@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:snowflake="http://www.mulesoft.org/schema/mule/snowflake"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:bti="http://www.mulesoft.org/schema/mule/ee/bti" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:vm="http://www.mulesoft.org/schema/mule/vm" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/bti http://www.mulesoft.org/schema/mule/ee/bti/current/mule-bti-ee.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/snowflake http://www.mulesoft.org/schema/mule/snowflake/current/mule-snowflake.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="eaf2b1f4-1bb7-4c44-be51-e515003822db" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="668814e3-7a12-43c1-8672-51e04389ef79" >
+		<http:request-connection host="62a7f822a89585c1770a3110.mockapi.io" protocol="HTTPS"/>
+	</http:request-config>
+	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="c2e9ae8d-37c8-49f7-9cfc-0ea4c0a88fc7" >
+		<salesforce:basic-connection username="${sfdc.username}" password="${sfdc.password}" securityToken="${sfdc.securityToken}" />
+	</salesforce:sfdc-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="f0b028d7-e22d-4062-afb4-140398828036" file="credentials/mdengler-credentials-file.properties" />
+	<flow name="api-to-salesforce-process-api-flow" doc:id="8341cbbb-22fd-44bd-9abb-3b50a5b91dd6" >
+		<http:listener doc:name="Listener" doc:id="069c286c-4ca3-4771-91b0-1767c0236f63" config-ref="HTTP_Listener_config" path="/getLeadsFromAPI"/>
+		<http:request method="GET" doc:name="GET Lead Data from API" doc:id="a6abced7-1a9c-4aa1-b044-49399ffc1650" config-ref="HTTP_Request_configuration" path="/leads"/>
+		<ee:transform doc:name="Map API Fields to Salesforce Fields" doc:id="ddc02212-c032-4c2c-ac81-3702abddcf18" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[output application/java
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	LastName: payload01.lastName,
+	FirstName: payload01.firstName,
+	Title: payload01.title,
+	Company: payload01.company,
+	Street: payload01.address,
+	City: payload01.city,
+	State: payload01.state,
+	PostalCode: payload01.postalCode,
+	Country: payload01.country,
+	Phone: payload01.phone,
+	Email: payload01.email,
+	Status: payload01.status,
+	External_Lead_ID__c: payload01.leadId
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:upsert doc:name="Insert / Update Lead in Salesforce" doc:id="6c112e95-4947-41c1-940f-d5dafafb6e5f" config-ref="Salesforce_Config" objectType="Lead" externalIdFieldName="Email"/>
+		<ee:transform doc:name="Craft Response to User" doc:id="52fda3f3-e928-4e7c-9c92-1aeb1b2070c7" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[output application/json
+---
+"Leads Created in Salesforce": payload.items.payload.created[0]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

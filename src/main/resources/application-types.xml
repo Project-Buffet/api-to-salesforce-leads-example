@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="leadExample" format="json">
+      <types:shape format="weave" example="examples/leadsExample.json"><![CDATA[%dw 2.0
+
+type leadExample = Array<{|  leadId: String,   firstName: String,   lastName: String,   company: String,   phone: String,   email: String,   address: String,   title: String,   city: String,   state: String,   country: String,   postalCode: String,   status: String|}> {"example": "[{\\\"leadId\\\":\\\"11224334\\\",\\\"firstName\\\":\\\"Shane\\\",\\\"lastName\\\":\\\"McClanahan\\\",\\\"company\\\":\\\"Tampa Bay Rays\\\",\\\"phone\\\":\\\"+1-202-555-0180\\\",\\\"email\\\":\\\"shane.mcclanahan@rays.com\\\",\\\"address\\\":\\\"123 Jungle Book Way\\\",\\\"title\\\":\\\"Starting Pitcher\\\",\\\"city\\\":\\\"Tampa Bay\\\",\\\"state\\\":\\\"FL\\\",\\\"country\\\":\\\"USA\\\",\\\"postalCode\\\":\\\"33660\\\",\\\"status\\\":\\\"Open - Not Contacted\\\"},{\\\"leadId\\\":\\\"11224334\\\",\\\"firstName\\\":\\\"Randy\\\",\\\"lastName\\\":\\\"Arozarena\\\",\\\"company\\\":\\\"Tampa Bay Rays\\\",\\\"phone\\\":\\\"+1-813-5453-01343\\\",\\\"email\\\":\\\"randy.arozarena@rays.com\\\",\\\"address\\\":\\\"339 Evan Longaria Drive\\\",\\\"title\\\":\\\"Center Fielder\\\",\\\"city\\\":\\\"Tampa Bay\\\",\\\"state\\\":\\\"FL\\\",\\\"country\\\":\\\"USA\\\",\\\"postalCode\\\":\\\"33663\\\",\\\"status\\\":\\\"Open - Not Contacted\\\"}]"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#ddc02212-c032-4c2c-ac81-3702abddcf18">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="leadExample"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>
